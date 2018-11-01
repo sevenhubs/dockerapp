@@ -1,29 +1,19 @@
-# versión del formato para CircleCI
 version: 2
 jobs:
   build:
     working_directory: /dockerapp
     docker:
-      # es la imagen del contenedor que contendrá a los demás contenedores.
-      # en este caso es una imagen oficial de Docker que incluye Git
       - image: docker:17.05.0-ce-git
     steps:
-      # obtener el código fuente del repositorio
       - checkout
-      # crea un entorno seguro para cada "build"
-      # el "primary container" utilizará este entorno
-      # 'setup_remote_docker' se incluye siempre que sea necesario utilizar los comandos docker y/o docker-compose.
       - setup_remote_docker
       - run:
           name: Install dependencies
-          # apk add ... -> Instala el gestor de paquetes pip.
-          # pip install ... -> Instala docker-compose.
           command: |
             apk add --no-cache py-pip=9.0.0-r1
             pip install docker-compose==1.15.0
       - run:
           name: Run tests
-          # crear los contenedores y ejecutar acciones sobre ellos
           command: |
             docker-compose up -d
             docker-compose run dockerapp python test.py
